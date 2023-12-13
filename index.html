@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2024</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: #2d2d2d;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4em;
+            margin: 0;
+            color: #ffcc00; /* Gorgeous gold color */
+        }
+
+        p {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        #calendar {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Happy New Year 2024!</h1>
+        <p>Wishing you joy, success, and prosperity in the coming year.</p>
+        <div id="countdown"></div>
+        <div id="calendar"></div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Countdown
+            var countDownDate = new Date("Jan 1, 2024 00:00:00").getTime();
+
+            function updateCountdown() {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("countdown").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+                if (distance < 0) {
+                    document.getElementById("countdown").innerHTML = "Happy New Year!";
+                }
+            }
+
+            setInterval(updateCountdown, 1000);
+            updateCountdown(); // Initial call
+
+            // Calendar
+            $('#calendar').fullCalendar({
+                events: [
+                    {
+                        title: 'New Year\'s Day',
+                        start: '2024-01-01'
+                    }
+                    // Add more events as needed
+                ],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                }
+            });
+
+            // Fireworks
+            const canvas = document.getElementById("fireworks");
+            const ctx = canvas.getContext("2d");
+            const particles = [];
+
+            function Particle(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+            }
+
+            Particle.prototype.update = function () {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.1;
+            };
+
+            Particle.prototype.draw = function () {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            };
+
+            function createParticles(x, y) {
+                for (let i = 0; i < 5; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            }
+
+            function animateParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].size <= 0.2) {
+                        particles.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                requestAnimationFrame(animateParticles);
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        });
+    </script>
+</body>
+</html>
